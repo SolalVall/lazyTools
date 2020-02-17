@@ -2,11 +2,14 @@
 
 # GENERIC VARS
 ## Global config
-LT_VERSION="0.0.1"
-LT_HOME="$HOME/.lazytools.d"
+LT_VERSION="0.0.2"
+LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
+LT_BASE_LOCATION="/usr/local/bin/tools"
 PACKAGE_MANAGER=""
 PACKAGE_NAME=""
-PACKAGE_LIST=("git" "vagrant" "virtualbox")
+PACKAGE_DEFAULT_LIST=$(find $LT_BASE_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+PACKAGE_USER_LIST=$(find $LT_USER_HOME_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+PACKAGE_COMPLETE_LIST=("${PACKAGE_DEFAULT_LIST[@]}" "${PACKAGE_USER_LIST[@]}")
 ## Color settings
 BOLD="\033[1m"
 RED="\033[31m"
@@ -37,7 +40,7 @@ ${BOLD}> Examples:${END}
 verify_package() {
 	PACKAGE_NAME=$1
 
-	#Verify if package is already or not (Depends of which command results status)
+	#Verify if package is already installed or not (Depends of which command results status)
 	IS_PACKAGE_INSTALLED=$(which $PACKAGE_NAME)
 	echo -e $BOLD"\n> Verify if package is already installed..."$END
 	if [ $? -ne 0 ]; then
@@ -52,28 +55,28 @@ verify_package() {
 
 install_package() {
 	# Verify if script folder for the package exists
-	if [[ -d $LT_HOME/$PACKAGE_NAME ]]; then
+	if [[ -d $LT_USER_HOME_LOCATION/$PACKAGE_NAME ]]; then
 		# Verify if there is some script available
-		if [[ -z $(ls $LT_HOME/$PACKAGE_NAME) ]]; then
+		if [[ -z $(ls $LT_USER_HOME_LOCATION/$PACKAGE_NAME) ]]; then
 			echo -e $RED"No script(s) available"$END
 			echo -e "Please create the necessaries script. For more information see the documentation"
 			exit 1
 		else
 			#Verify that scripts in package dir are executables
-			for script in $LT_HOME/$PACKAGE_NAME/*; do
+			for script in $LT_USER_HOME_LOCATION/$PACKAGE_NAME/*; do
 				if [[ $(stat -c "%a" "$script") -ne "755" ]]; then
 					chmod 755 $script
 				fi
 			done
 		fi
 	else
-		echo -e $RED"The curtom directory named: $LT_HOME/$PACKAGE_NAME doesn't exists"$END
+		echo -e $RED"The curtom directory named: $LT_USER_HOME_LOCATION/$PACKAGE_NAME doesn't exists"$END
 		echo -e "Please create the folder and its necessaries script. For more information see the documentation"
 		exit 1
 	fi
 
 	# Execute default install script for the package
-	$LT_HOME/$PACKAGE_NAME/install.sh $PACKAGE_MANAGER $PACKAGE_NAME
+	$LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh $PACKAGE_MANAGER $PACKAGE_NAME
 	echo -e $GREEN"Package $1 installed"$END
 }
 
@@ -94,9 +97,7 @@ case $1 in
 	-l|--list)
 		echo -e $BOLD"> Packages available:\n"$END
 
-		for package in ${PACKAGE_LIST[@]}; do
-			echo -e "  $package"
-		done
+		echo -e "${PACKAGE_COMPLETE_LIST[@]}" | tr ' ' '\n' | sort -u | grep -v ".git"
 	
 		echo -e $BOLD"\n> Installation:"$END
 		echo -e "\n  lt [-i|--install] package_name\n"
