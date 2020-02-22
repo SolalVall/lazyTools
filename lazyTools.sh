@@ -9,7 +9,8 @@ PACKAGE_MANAGER=""
 PACKAGE_NAME=""
 PACKAGE_DEFAULT_LIST=$(find $LT_BASE_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 PACKAGE_USER_LIST=$(find $LT_USER_HOME_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-PACKAGE_COMPLETE_LIST=("${PACKAGE_DEFAULT_LIST[@]}" "${PACKAGE_USER_LIST[@]}")
+PACKAGE_FULL_LIST=("${PACKAGE_DEFAULT_LIST[@]}" "${PACKAGE_USER_LIST[@]}")
+PACKAGE_LIST=$(echo "${PACKAGE_FULL_LIST[@]}" | tr ' ' '\n' | sort -u | grep -v ".git")
 ## Color settings
 BOLD="\033[1m"
 RED="\033[31m"
@@ -97,7 +98,7 @@ case $1 in
 	-l|--list)
 		echo -e $BOLD"> Packages available:\n"$END
 
-		echo -e "${PACKAGE_COMPLETE_LIST[@]}" | tr ' ' '\n' | sort -u | grep -v ".git"
+		echo -e "${PACKAGE_LIST[@]}" | sed 's/^/  /g'
 	
 		echo -e $BOLD"\n> Installation:"$END
 		echo -e "\n  lt [-i|--install] package_name\n"
@@ -124,7 +125,8 @@ case $1 in
 			verify_distrib
 
 			echo -e $BOLD"> Verify if package exists..."$END
-			if [[ " ${PACKAGE_LIST[@]} " =~ " $2 " ]]; then
+			#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
 				echo -e $GREEN"Package $2 available"$END
 				verify_package $2
 			else
