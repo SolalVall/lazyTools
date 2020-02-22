@@ -2,21 +2,29 @@
 
 # GENERIC VARS
 ## Global config
-LT_VERSION="0.0.2"
+LT_VERSION="0.1"
 LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
-LT_BASE_LOCATION="/usr/local/bin/tools"
+LT_BASE_TOOLS_LOCATION="/usr/local/bin/tools"
+LT_BASE_TEMPLATE_LOCATION="/usr/local/bin/templates"
 PACKAGE_MANAGER=""
 PACKAGE_NAME=""
-PACKAGE_DEFAULT_LIST=$(find $LT_BASE_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+
+## Retrieve all availble packages
+PACKAGE_DEFAULT_LIST=$(find $LT_BASE_TOOLS_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 PACKAGE_USER_LIST=$(find $LT_USER_HOME_LOCATION -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 PACKAGE_FULL_LIST=("${PACKAGE_DEFAULT_LIST[@]}" "${PACKAGE_USER_LIST[@]}")
+### Get all packages whitout duplicated from home and base base folder
 PACKAGE_LIST=$(echo "${PACKAGE_FULL_LIST[@]}" | tr ' ' '\n' | sort -u | grep -v ".git")
+### Get only package duplicated between home and base
+PACKAGE_LIST_DUPLICATE=$(echo "${PACKAGE_FULL_LIST[@]}" |tr ' ' '\n' | sort | grep -v ".git" | uniq -d) 
+
 ## Color settings
 BOLD="\033[1m"
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
 END="\e[0m"
+
 ## Help message
 DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-v|--version]${END}
 
@@ -31,6 +39,7 @@ ${BOLD}> Options:${END}
 	[-v|--version] Display current version of the script
 	[-l|--list] List all available packages
 	[-i|--install] Install a specific package
+	[-c|--create] Create your own lazytools package
 
 ${BOLD}> Examples:${END}
 	
@@ -40,10 +49,9 @@ ${BOLD}> Examples:${END}
 # GENERIC FUNCS
 verify_package() {
 	PACKAGE_NAME=$1
-
 	#Verify if package is already installed or not (Depends of which command results status)
-	IS_PACKAGE_INSTALLED=$(which $PACKAGE_NAME)
 	echo -e $BOLD"\n> Verify if package is already installed..."$END
+	IS_PACKAGE_INSTALLED=$(which $PACKAGE_NAME)
 	if [ $? -ne 0 ]; then
 		echo -e $GREEN"Package $PACKAGE_NAME not installed"$END
 		echo -e $BOLD"\n> Start package installation..."$END
@@ -54,8 +62,42 @@ verify_package() {
 	fi
 }
 
+execute_script() {
+	# Proceed some verification
+	echo "Verify $1.sh script permissions..."
+	#Verify that scripts in package dir are executables
+	#if [[ $(stat -c "%a" "$LT_USER_HOME_LOCATION/$PACKAGE_NAME/$1.sh") -ne "755" ]]; then
+#		chmod 755 $LT_USER_HOME_LOCATION/$PACKAGE_NAME/$1.sh 
+#	fi
+	echo "Execute your custom $PACKAGE_NAME $1 script..."
+}
+
 install_package() {
-	# Verify if script folder for the package exists
+	# First during an installation we always start by executing the install script
+	# from the custom lazytools home folder if the script exsists then if not from the main bin folder
+	if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh ]]; then
+		echo "homemade LazyTools package detected"
+		execute_script install 
+		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
+			echo "A custom config has been detected" 
+			execute_script config 
+		else
+			echo "No custom config detected for $PACKAGE_NAME"
+		fi
+		exit 0 
+	else
+		echo "It's a bin install"
+		execute_script install 
+		
+		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
+			echo "A custom config has been detected" 
+			execute_script config 
+		else
+			echo "No custom config detected for $PACKAGE_NAME"
+		fi
+		exit 0 
+	fi	
+
 	if [[ -d $LT_USER_HOME_LOCATION/$PACKAGE_NAME ]]; then
 		# Verify if there is some script available
 		if [[ -z $(ls $LT_USER_HOME_LOCATION/$PACKAGE_NAME) ]]; then
@@ -77,8 +119,8 @@ install_package() {
 	fi
 
 	# Execute default install script for the package
-	$LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh $PACKAGE_MANAGER $PACKAGE_NAME
-	echo -e $GREEN"Package $1 installed"$END
+	#$LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh $PACKAGE_MANAGER $PACKAGE_NAME
+	#echo -e $GREEN"Package $1 installed"$END
 }
 
 verify_distrib() { 
@@ -93,6 +135,13 @@ verify_distrib() {
 	fi
 }
 
+create_package() {
+	echo -e "[OK] Create LazyTools package location in $LT_USER_HOME_LOCATION"
+	mkdir $LT_USER_HOME_LOCATION/$1		
+	echo -e "[OK] Copy default install template script in $LT_USER_HOME_LOCATION/$1"
+	cp $LT_BASE_TEMPLATE_LOCATION/install_template.sh $LT_USER_HOME_LOCATION/$1/install.sh
+}
+
 ## All options configuration 
 case $1 in 
 	-l|--list)
@@ -105,6 +154,7 @@ case $1 in
 		exit 0 
 		;;
 
+	# Print help when user don't provide argument
 	""|-h|--help)
 		echo -e "$DISPLAY_HELP"
 		exit 0
@@ -114,6 +164,26 @@ case $1 in
 		echo -e $BOLD"> lazyTools v$LT_VERSION"$END
 		exit 0
 		;;	
+
+	-c|--create)
+		if [ -z $2 ]; then
+			echo -e $RED"Please provide a package to create !"$END
+			echo -e "Maybe you want to run: lt -c my_package"
+			exit 1
+		else
+			echo -e $BOLD"> Verify if LazyTools package already exists..."$END
+			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
+				echo -e $YELLOW"LazyTools package name $2 already exists"$END
+				exit 1
+			else
+				echo -e $GREEN"LazyTools package name $2 not exists\n"$END
+				echo -e $BOLD"> Create LaztTools package named $2 in $LT_USER_HOME_LOCATION ..."$END
+				create_package $2	
+				echo -e $GREEN"LazyTools package named $2 sucessfully created in $LT_USER_HOME_LOCATION/$2 \n"$END
+				exit 0
+			fi
+		fi
+		;;
 
 	-i|--install)
 		if [ -z $2 ]; then

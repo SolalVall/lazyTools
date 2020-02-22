@@ -18,7 +18,7 @@ In order to install it, just open a terminal and copy/paste the following comman
 ```bash
 git clone https://github.com/SolalVall/lazyTools.git && \
 cd lazyTools && \
-sudo ./install.sh
+sudo ./setup.sh
 ```
 
 ## Basic Usage

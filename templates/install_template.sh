@@ -1,0 +1,3 @@
+#!/bin/bash
+PACKAGE_MANAGER=$1
+PACKAGE_NAME=$2
