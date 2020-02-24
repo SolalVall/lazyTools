@@ -63,64 +63,50 @@ verify_package() {
 }
 
 execute_script() {
-	# Proceed some verification
-	echo "Verify $1.sh script permissions..."
-	#Verify that scripts in package dir are executables
-	#if [[ $(stat -c "%a" "$LT_USER_HOME_LOCATION/$PACKAGE_NAME/$1.sh") -ne "755" ]]; then
-#		chmod 755 $LT_USER_HOME_LOCATION/$PACKAGE_NAME/$1.sh 
-#	fi
-	echo "Execute your custom $PACKAGE_NAME $1 script..."
+	SCRIPT_TYPE=$1
+	SCRIPT_LOCATION=$2
+	if [[ $SCRIPT_LOCATION == $LT_USER_HOME_LOCATION ]]; then
+		# Proceed some verification
+		echo "Verify $SCRIPT_TYPE.sh script permissions..."
+		#Verify that scripts in package dir are executables
+		if [[ $(stat -c "%a" "$LT_USER_HOME_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh") -ne "755" ]]; then
+			chmod 755 $LT_USER_HOME_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh 
+		fi
+	fi
+
+	echo "Execute your custom $PACKAGE_NAME $SCRIPT_TYPE script..."
+	$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh $PACKAGE_MANAGER $PACKAGE_NAME
 }
 
 install_package() {
 	# First during an installation we always start by executing the install script
 	# from the custom lazytools home folder if the script exsists then if not from the main bin folder
 	if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh ]]; then
-		echo "homemade LazyTools package detected"
-		execute_script install 
+		echo "Homemade LazyTools package detected.."
+		execute_script install $LT_USER_HOME_LOCATION 
+
 		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
-			echo "A custom config has been detected" 
-			execute_script config 
+			echo "A custom config script detected for $PACKAGE_NAME" 
+			echo "Start installation of custom scripts"
+			execute_script config $LT_USER_HOME_LOCATION 
 		else
-			echo "No custom config detected for $PACKAGE_NAME"
+			echo "No custom config script detected for $PACKAGE_NAME"
 		fi
 		exit 0 
 	else
-		echo "It's a bin install"
-		execute_script install 
+		echo "Install default LazyTools package.."
+		execute_script install $LT_BASE_TOOLS_LOCATION 
 		
 		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
-			echo "A custom config has been detected" 
-			execute_script config 
+			echo "A custom config script has been detected for $PACKAGE_NAME" 
+			execute_script config $LT_USER_HOME_LOCATION 
 		else
-			echo "No custom config detected for $PACKAGE_NAME"
+			echo "No custom config script detected for $PACKAGE_NAME"
 		fi
 		exit 0 
 	fi	
 
-	if [[ -d $LT_USER_HOME_LOCATION/$PACKAGE_NAME ]]; then
-		# Verify if there is some script available
-		if [[ -z $(ls $LT_USER_HOME_LOCATION/$PACKAGE_NAME) ]]; then
-			echo -e $RED"No script(s) available"$END
-			echo -e "Please create the necessaries script. For more information see the documentation"
-			exit 1
-		else
-			#Verify that scripts in package dir are executables
-			for script in $LT_USER_HOME_LOCATION/$PACKAGE_NAME/*; do
-				if [[ $(stat -c "%a" "$script") -ne "755" ]]; then
-					chmod 755 $script
-				fi
-			done
-		fi
-	else
-		echo -e $RED"The curtom directory named: $LT_USER_HOME_LOCATION/$PACKAGE_NAME doesn't exists"$END
-		echo -e "Please create the folder and its necessaries script. For more information see the documentation"
-		exit 1
-	fi
-
-	# Execute default install script for the package
-	#$LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh $PACKAGE_MANAGER $PACKAGE_NAME
-	#echo -e $GREEN"Package $1 installed"$END
+	echo -e $GREEN"Package $1 installed"$END
 }
 
 verify_distrib() { 

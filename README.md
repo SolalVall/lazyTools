@@ -55,4 +55,8 @@ v0.0.2:
   - Create a small installer
   - Main script able to retrieve package from default and user custom
   - Move packagages to tools/ folder
-  - Readme
+
+v0.1:
+  - Add possibility for user to create their own package in ~/lazytools.d (```lt -c my_package```)
+  - Add ability to list packages from user home and default lazyTools location
+  - User can now add a config.sh to a package (via their own ~/lazytools.d folder). Acts like a custom configuration for their package
