@@ -2,10 +2,11 @@
 
 # GENERIC VARS
 ## Global config
-LT_VERSION="0.1"
+LT_VERSION="0.1.1"
 LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
-LT_BASE_TOOLS_LOCATION="/usr/local/bin/tools"
-LT_BASE_TEMPLATE_LOCATION="/usr/local/bin/templates"
+LT_BASE_LOCATION="/usr/local/bin/lazyTools"
+LT_BASE_TOOLS_LOCATION="$LT_BASE_LOCATION/tools"
+LT_BASE_TEMPLATE_LOCATION="LT_BASE_LOCATION/templates"
 PACKAGE_MANAGER=""
 PACKAGE_NAME=""
 
@@ -26,7 +27,7 @@ YELLOW="\033[33m"
 END="\e[0m"
 
 ## Help message
-DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-v|--version]${END}
+DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-c|--create] [-v|--version]${END}
 
 ${BOLD}> Description:${END} 
 

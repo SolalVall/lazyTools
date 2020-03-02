@@ -54,7 +54,7 @@ v0.0.1:
 v0.0.2:
   - Create a small installer
   - Main script able to retrieve package from default and user custom
-  - Move packagages to tools/ folder
+  - Move packages to tools/ folder
 
 v0.1:
   - Add possibility for user to create their own package in ~/lazytools.d (```lt -c my_package```)

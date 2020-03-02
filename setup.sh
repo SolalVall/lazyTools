@@ -1,9 +1,11 @@
 #!/bin/bash
 
 #variables
-LAZYTOOLS_PACKAGES_LOCATION="/usr/local/bin/tools"
-LAZYTOOLS_TEMPLATES_LOCATION="/usr/local/bin/templates"
-LAZYTOOLS_EXE="lt"
+BASE_LOCATION="/usr/local/bin"
+LAZYTOOLS_LOCATION="$BASE_LOCATION/lazyTools"
+LAZYTOOLS_PACKAGES_LOCATION="$LAZYTOOLS_LOCATION/tools"
+LAZYTOOLS_TEMPLATES_LOCATION="$LAZYTOOLS_LOCATION/templates"
+LAZYTOOLS_EXE="$LAZYTOOLS_LOCATION/lazyTools.sh"
 
 #funcs
 verify_status() {
@@ -21,21 +23,21 @@ if [ ! -z $(which $LAZYTOOLS_EXE) ]; then
 	$LAZYTOOLS_EXE --version
 	exit 0
 else
-	echo -e "Export all lazyTools packages"
-	COPY_TOOL_CMD=$(cp -R $PWD/tools $(dirname $LAZYTOOLS_PACKAGES_LOCATION) 2>&1  >/dev/null)
+	echo -e "Create lazyTools location"
+	CREATE_LOCATION_CMD=$(mkdir $LAZYTOOLS_LOCATION)
+	verify_status $CREATE_LOCATION_CMD
+
+	echo -e "Export lazyTools to new location"
+	COPY_TOOL_CMD=$(cp -R $PWD/{tools,templates,lazyTools.sh} $LAZYTOOLS_LOCATION 2>&1 >/dev/null)
 	verify_status $COPY_TOOL_CMD
 
-	echo -e "Export all lazyTools templates"
-	COPY_TEMPLATES_CMD=$(cp -R $PWD/templates $(dirname $LAZYTOOLS_TEMPLATES_LOCATION) 2>&1  >/dev/null)
-	verify_status $COPY_TEMPLATES_CMD
-
-	echo -e "Setup $LAZYTOOLS_EXE (lazyTools) as executable"
-	CONF_CMD=$(cp $PWD/lazyTools.sh $(dirname $LAZYTOOLS_PACKAGES_LOCATION)/$LAZYTOOLS_EXE 2>&1 >/dev/null)
+	echo -e "Setup lt (lazyTools) as executable"
+	CONF_CMD=$(ln -s $LAZYTOOLS_EXE $BASE_LOCATION/lt 2>&1 >/dev/null)
 	verify_status $CONF_CMD
 
 	echo -e "Create custom lazytools folder for user"
-	# We don't want to override the lazyTools user folder
-	CUSTOM_CMD=$(mkdir -p $HOME/.lazyTools.d)
+	# We don't want to override the lazyTools user folder + we want to create it with username who executed the sudo cmd
+	CUSTOM_CMD=$(sudo -Hu $SUDO_USER sh -c "mkdir -p $HOME/.lazyTools.d")
 	verify_status $CUSTOM_CMD
 
 	echo -e "\e[1;32m\nIntallation Complete\e[0m"
