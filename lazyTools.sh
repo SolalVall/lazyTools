@@ -6,7 +6,7 @@ LT_VERSION="0.1.1"
 LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
 LT_BASE_LOCATION="/usr/local/bin/lazyTools"
 LT_BASE_TOOLS_LOCATION="$LT_BASE_LOCATION/tools"
-LT_BASE_TEMPLATE_LOCATION="LT_BASE_LOCATION/templates"
+LT_BASE_TEMPLATE_LOCATION="$LT_BASE_LOCATION/templates"
 PACKAGE_MANAGER=""
 PACKAGE_NAME=""
 
@@ -59,7 +59,7 @@ verify_package() {
 		install_package
 	else
 		echo -e $YELLOW"Package $PACKAGE_NAME already installed"$END
-		exit 
+		#exit 
 	fi
 }
 
@@ -179,8 +179,52 @@ case $1 in
 			echo -e "Check available packages   | lt -l"
 			exit 1
 		else
+			echo -e "================== Verification ===================\n"
 			verify_distrib
 
+			#Handle case where user provide multiple packages
+			if [[ "$#" -gt 2 ]]; then
+				echo "===== Multiple packages installation detected ====="
+				#Start to iterate from second argument pass by the user (we don't want -i|--install)
+				for (( i=2; i<=$#; i++ ))
+				do
+					#${!i} bash convention for variable extension
+					package="${!i}"
+
+					#Some calculs to get a clean header/footer to print to user
+					total_len=50
+					package_string_len="${#package}"
+					sub_string_len=$(($total_len - $package_string_len))
+					start_string_len=$(($sub_string_len/2))
+					if (($sub_string_len % 2 )); then
+						start_string_len=$(($sub_string_len/2))
+						end_string_len=$(($sub_string_len/2))
+					else
+						start_string_len=$(($sub_string_len/2))
+						end_string_len=$(($sub_string_len/2 - 1))
+					fi
+						
+					start_string=$(printf "%-${start_string_len}s" "-")
+					end_string=$(printf "%-${end_string_len}s" "-")
+					echo -e "\n${start_string// /-} $package ${end_string// /-}"
+
+					echo -e $BOLD"> Verify if package exists..."$END
+					#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+					if [[ $PACKAGE_LIST =~ (^|[[:space:]])"${!i}"($|[[:space:]]) ]]; then
+						echo -e $GREEN"Package ${!i} available"$END
+						verify_package "${!i}"
+					else
+						echo -e $YELLOW"Package ${!i} doesn't not exists, please provide a valid package"$END
+						echo -e "Too see the list of available package please run: lt -l\n"
+						exit 1
+					fi
+
+					footer_string=$( printf "%-50s" "-" )
+					echo -e "${footer_string// /-}\n"
+				done
+			else
+				echo "one Package"
+			fi
 			echo -e $BOLD"> Verify if package exists..."$END
 			#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
 			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then

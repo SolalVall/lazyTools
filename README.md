@@ -60,3 +60,7 @@ v0.1:
   - Add possibility for user to create their own package in ~/lazytools.d (```lt -c my_package```)
   - Add ability to list packages from user home and default lazyTools location
   - User can now add a config.sh to a package (via their own ~/lazytools.d folder). Acts like a custom configuration for their package
+
+v0.1.1
+  - Enable possibility to install multiple packages at the same time
+  - Modify command output
