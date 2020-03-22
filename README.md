@@ -23,7 +23,7 @@ sudo ./setup.sh
 
 ## Basic Usage
 
-- Install a package: ``` lt --package_name ```
+- Install a package: ``` lt [-i|--install] foo```
 
   Example:
 
@@ -32,11 +32,33 @@ sudo ./setup.sh
   sudo lt -i vagrant
   ```
 
+- Install multiple packages: ```lt [-i|--install] foo bar```
+
+  Example:
+
+  ```bash
+  sudo lt --install git vagrant
+  ```
+
+- Create your own package: ```lt [-c|--create] foo```
+
 - List package available: ``` lt [-l|--list]```
 
 - Check script version: ``` lt [-v|--version]```
 
 - Display help: ``` lt [-h|--help]```
+
+## Pipeline
+
+### Test it locally with Vagrant
+
+In order to test lazyTools locally run the following commands:
+
+```bash
+cd pipeline && ./pipeline.sh
+```
+
+To write some custom tests please update the ```test_lt``` function in ```pipeline/pipeline.sh``` script.
 
 ## Releases infos
   
