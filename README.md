@@ -64,3 +64,6 @@ v0.1:
 v0.1.1
   - Enable possibility to install multiple packages at the same time
   - Modify command output
+
+v0.2:
+  - Create a local Pipeline in order to test lazyTools installations and some commands via Vagrant (available into the pipeline folder)
