@@ -23,7 +23,7 @@ sudo ./setup.sh
 
 ## Basic Usage
 
-- Install a package: ``` lt --package_name ```
+- Install a package: ``` lt [-i|--install] foo```
 
   Example:
 
@@ -32,11 +32,33 @@ sudo ./setup.sh
   sudo lt -i vagrant
   ```
 
+- Install multiple packages: ```lt [-i|--install] foo bar```
+
+  Example:
+
+  ```bash
+  sudo lt --install git vagrant
+  ```
+
+- Create your own package: ```lt [-c|--create] foo```
+
 - List package available: ``` lt [-l|--list]```
 
 - Check script version: ``` lt [-v|--version]```
 
 - Display help: ``` lt [-h|--help]```
+
+## Pipeline
+
+### Test it locally with Vagrant
+
+In order to test lazyTools locally run the following commands:
+
+```bash
+cd pipeline && ./pipeline.sh
+```
+
+To write some custom tests please update the ```test_lt``` function in ```pipeline/pipeline.sh``` script.
 
 ## Releases infos
   
@@ -60,3 +82,10 @@ v0.1:
   - Add possibility for user to create their own package in ~/lazytools.d (```lt -c my_package```)
   - Add ability to list packages from user home and default lazyTools location
   - User can now add a config.sh to a package (via their own ~/lazytools.d folder). Acts like a custom configuration for their package
+
+v0.1.1
+  - Enable possibility to install multiple packages at the same time
+  - Modify command output
+
+v0.2:
+  - Create a local Pipeline in order to test lazyTools installations and some commands via Vagrant (available into the pipeline folder)
