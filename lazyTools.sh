@@ -75,7 +75,6 @@ execute_script() {
 		fi
 	fi
 
-	echo "Execute your custom $PACKAGE_NAME $SCRIPT_TYPE script..."
 	$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh $PACKAGE_MANAGER $PACKAGE_NAME
 }
 
@@ -223,17 +222,16 @@ case $1 in
 					echo -e "${footer_string// /-}\n"
 				done
 			else
-				echo "one Package"
-			fi
-			echo -e $BOLD"> Verify if package exists..."$END
-			#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
-			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
-				echo -e $GREEN"Package $2 available"$END
-				verify_package $2
-			else
-				echo -e $YELLOW"Package $2 doesn't not exists, please provide a valid package"$END
-				echo -e "Too see the list of available package please run: lt -l\n"
-				exit 1
+				echo -e $BOLD"> Verify if package exists..."$END
+				#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+				if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
+					echo -e $GREEN"Package $2 available"$END
+					verify_package $2
+				else
+					echo -e $YELLOW"Package $2 doesn't not exists, please provide a valid package"$END
+					echo -e "Too see the list of available package please run: lt -l\n"
+					exit 1
+				fi
 			fi
 		fi	
 		exit 0

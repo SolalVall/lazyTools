@@ -13,6 +13,8 @@ test_lt() {
 	vagrant ssh -c "sudo lt -i git"
 	echo -e "\n\033[34m[TEST: INSTALL MULTIPLES PACKAGES (vim, foo)]\033[0m\n"
 	vagrant ssh -c "sudo lt -i vim foo"
+	echo -e "\n\033[34m[TEST: INSTALL OF SPECIFIED PACKAGE FROM CLI]\033[0m\n"
+	vagrant ssh -c "sudo lt -i $1"
 }
 
 is_vagrant_installed=$(which vagrant)
@@ -35,7 +37,7 @@ else
 		else	
 			echo -e "\033[32m \n>>>>>>>> ENVIRONMENT BUILD SUCCESS\033[0m\n"
 			echo -e "\033[1m================ TEST ENVIRONEMENT ================\033[0m\n"
-			test_lt
+			test_lt $@
 			echo -e "\033[32m \n>>>>>>>> ALL LAZYTOOLS TESTS SUCCEED\033[0m\n"
 			echo -e "\n\033[1m================ CLEAN ENVIRONEMENT ================\033[0m\n"
                         vagrant destroy -f
