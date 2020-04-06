@@ -40,6 +40,8 @@ sudo ./setup.sh
   sudo lt --install git vagrant
   ```
 
+- Execute custom user config script: ```sudo lt [-e|--exec] foo```
+
 - Create your own package: ```lt [-c|--create] foo```
 
 - List package available: ``` lt [-l|--list]```

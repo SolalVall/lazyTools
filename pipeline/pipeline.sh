@@ -1,6 +1,8 @@
 #!/bin/bash
 
+REQUIRED_TOOL="terraform git docker ansible vagrant virtualbox"
 test_lt() {
+	vagrant ssh -c "sudo apt install unzip -y"
 	echo -e "\n\033[34m[TEST: CHECK MANPAGE]\033[0m\n"
 	vagrant ssh -c "lt -h"
 	echo -e "\n\033[34m[TEST: CHECK VERSION]\033[0m\n"
@@ -13,8 +15,10 @@ test_lt() {
 	vagrant ssh -c "sudo lt -i git"
 	echo -e "\n\033[34m[TEST: INSTALL MULTIPLES PACKAGES (vim, foo)]\033[0m\n"
 	vagrant ssh -c "sudo lt -i vim foo"
-	echo -e "\n\033[34m[TEST: INSTALL OF SPECIFIED PACKAGE FROM CLI]\033[0m\n"
-	vagrant ssh -c "sudo lt -i $1"
+	echo -e "\n\033[34m[TEST: INSTALL DEVELOPER PACKAGES]\033[0m\n"
+	vagrant ssh -c "sudo lt -i $REQUIRED_TOOL"
+	#echo -e "\n\033[34m[TEST: INSTALL OF SPECIFIED PACKAGE FROM CLI]\033[0m\n"
+	#vagrant ssh -c "sudo lt -i $1"
 }
 
 is_vagrant_installed=$(which vagrant)
