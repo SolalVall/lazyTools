@@ -2,7 +2,7 @@
 
 # GENERIC VARS
 ## Global config
-LT_VERSION="0.2.0"
+LT_VERSION="0.3.0"
 LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
 LT_BASE_LOCATION="/usr/local/bin/lazyTools"
 LT_BASE_TOOLS_LOCATION="$LT_BASE_LOCATION/tools"
@@ -27,7 +27,7 @@ YELLOW="\033[33m"
 END="\e[0m"
 
 ## Help message
-DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-e|--exec] [-c|--create] [-v|--version]${END}
+DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-e|--exec] [-c|--create] [-u|--update] [-v|--version]${END}
 
 ${BOLD}> Description:${END} 
 
@@ -42,6 +42,7 @@ ${BOLD}> Options:${END}
 	[-i|--install] Install a specific package
 	[-c|--create] Create your own lazytools package
 	[-e|--exec] Execute user custom config script 
+	[-u|--update] Update Lazy Tools
 
 ${BOLD}> Examples:${END}
 	
@@ -83,7 +84,7 @@ execute_script() {
 		echo "Start installation of $SCRIPT_LOCATION/$PACKAGE_NAME/install.sh"
 		$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh $PACKAGE_MANAGER $PACKAGE_NAME
 	else
-		echo "Start installation of $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh"
+		echo "Start installation of $SCRIPT_LOCATION/$PACKAGE_NAME/config.sh"
 		$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
 	fi
 }
@@ -184,6 +185,24 @@ case $1 in
 		fi
 		;;
 
+	-u|--update)
+		LATEST_LT_VERSION=$(curl -sL "https://github.com/SolalVall/lazyTools/releases/latest" | grep -Po 'tree/v([0-9]|\.)+' | head -n1 | sed 's/^.*v//g')
+		echo -e $BOLD"> Check if a new version of lazy tools is available"$END
+		if [[ "$LT_VERSION" != "$LATEST_LT_VERSION" ]]; then
+			echo -e $GREEN"New version of LazyTools available: v$LATEST_LT_VERSION\n"$END
+			echo -e $BOLD"> Start installation of LazyTools v$LATEST_LT_VERSION"$END
+			git clone https://github.com/SolalVall/lazyTools.git /tmp/lazyTools
+			cp -R /tmp/lazyTools/{tools,templates,lazyTools.sh} $LT_BASE_LOCATION
+			echo -e $GREEN"LazyTools Updated !\n"$END
+			lt --version
+			exit 0
+		else
+			echo -e $GREEN"Your LazyTools is the latest version (v$LT_VERSION)\n"$END
+			exit 0
+		fi
+		;;
+
+		
 	-e|--exec)
 		if [ -z $2 ]; then
 			echo -e $RED"Please provide a package to config !"$END
@@ -198,10 +217,11 @@ case $1 in
 				echo -e $BOLD"\n> Verify if custom script exists..."$END
 				if [[ -f $LT_USER_HOME_LOCATION/$2/config.sh ]]; then
 					echo "A custom config script detected for $2" 
-					execute_script config $LT_USER_HOME_LOCATION/$2
+					PACKAGE_NAME=$2
+					execute_script config $LT_USER_HOME_LOCATION
 					exit 0
 				else
-					echo -e $RED"No custom config script named config.sh detected in $LT_USER_HOME_LOCATION/$PACKAGE_NAME"$EMD
+					echo -e $RED"No custom config script named config.sh detected in $LT_USER_HOME_LOCATION/$2"$EMD
 					exit 1
 				fi
 			else
