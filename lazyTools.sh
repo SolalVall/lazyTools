@@ -85,7 +85,7 @@ execute_script() {
 		$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh $PACKAGE_MANAGER $PACKAGE_NAME
 	else
 		echo "Start installation of $SCRIPT_LOCATION/$PACKAGE_NAME/config.sh"
-		$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
+		sudo -i -u $SUDO_USER $SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
 	fi
 }
 
@@ -172,7 +172,7 @@ case $1 in
 			exit 1
 		else
 			echo -e $BOLD"> Verify if LazyTools package already exists..."$END
-			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
+			if [[ $PACKAGE_USER_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
 				echo -e $YELLOW"LazyTools package name $2 already exists"$END
 				exit 1
 			else
@@ -193,6 +193,7 @@ case $1 in
 			echo -e $BOLD"> Start installation of LazyTools v$LATEST_LT_VERSION"$END
 			git clone https://github.com/SolalVall/lazyTools.git /tmp/lazyTools
 			cp -R /tmp/lazyTools/{tools,templates,lazyTools.sh} $LT_BASE_LOCATION
+			rm -rf /tmp/lazyTools
 			echo -e $GREEN"LazyTools Updated !\n"$END
 			lt --version
 			exit 0

@@ -2,7 +2,6 @@
 
 REQUIRED_TOOL="terraform git docker ansible vagrant virtualbox"
 test_lt() {
-	vagrant ssh -c "sudo apt install unzip -y"
 	echo -e "\n\033[34m[TEST: CHECK MANPAGE]\033[0m\n"
 	vagrant ssh -c "lt -h"
 	echo -e "\n\033[34m[TEST: CHECK VERSION]\033[0m\n"
