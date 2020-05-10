@@ -2,7 +2,7 @@
 
 # GENERIC VARS
 ## Global config
-LT_VERSION="0.4.0"
+LT_VERSION="0.4.1"
 LT_USER_HOME_LOCATION="$HOME/.lazyTools.d"
 LT_BASE_LOCATION="/usr/local/bin/lazyTools"
 LT_BASE_TOOLS_LOCATION="$LT_BASE_LOCATION/tools"
@@ -17,7 +17,7 @@ PACKAGE_FULL_LIST=("${PACKAGE_DEFAULT_LIST[@]}" "${PACKAGE_USER_LIST[@]}")
 ### Get all packages whitout duplicated from home and base base folder
 PACKAGE_LIST=$(echo "${PACKAGE_FULL_LIST[@]}" | tr ' ' '\n' | sort -u | grep -v ".git")
 ### Get only package duplicated between home and base
-PACKAGE_LIST_DUPLICATE=$(echo "${PACKAGE_FULL_LIST[@]}" |tr ' ' '\n' | sort | grep -v ".git" | uniq -d) 
+PACKAGE_LIST_DUPLICATE=$(echo "${PACKAGE_FULL_LIST[@]}" |tr ' ' '\n' | sort | grep -v ".git" | uniq -d)
 
 ## Color settings
 BOLD="\033[1m"
@@ -29,23 +29,23 @@ END="\e[0m"
 ## Help message
 DISPLAY_HELP="${BOLD}> Usage: lt [-h|--help] [-l|--list] [-i|--install] [-e|--exec] [-c|--create] [-u|--update] [-v|--version]${END}
 
-${BOLD}> Description:${END} 
+${BOLD}> Description:${END}
 
 	lt (lazyTools) allows you to automatically install some packages by using your package
 	manager or via some extra-steps and configuration
 
 ${BOLD}> Options:${END}
-	
-	[-h|--help] Display the following message 
+
+	[-h|--help] Display the following message
 	[-v|--version] Display current version of the script
 	[-l|--list] List all available packages
 	[-i|--install] Install a specific package
 	[-c|--create] Create your own lazytools package
-	[-e|--exec] Execute user custom config script 
+	[-e|--exec] Execute user custom config script
 	[-u|--update] Update Lazy Tools
 
 ${BOLD}> Examples:${END}
-	
+
 	lt --create package
 	lt --install package
 	lt --install package1 package2
@@ -74,7 +74,7 @@ execute_script() {
 		echo "Verify $SCRIPT_TYPE.sh script permissions..."
 		#Verify that scripts in package dir are executables
 		if [[ $(stat -c "%a" "$LT_USER_HOME_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh") -ne "755" ]]; then
-			chmod 755 $LT_USER_HOME_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh 
+			chmod 755 $LT_USER_HOME_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
 		fi
 	fi
 
@@ -95,12 +95,12 @@ install_package() {
 	echo -e $BOLD"\n>>> Verify if it's your own custom package..."$END
 	if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh ]]; then
 		echo -e $GREEN"Homemade LazyTools package detected"$END
-		execute_script install $LT_USER_HOME_LOCATION 
+		execute_script install $LT_USER_HOME_LOCATION
 
 		echo -e $BOLD"\n>>> Verify if a custom config script exists..."$END
 		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
 			echo -e $GREEN"Custom config script detected"$END
-			execute_script config $LT_USER_HOME_LOCATION 
+			execute_script config $LT_USER_HOME_LOCATION
 		else
 			echo "No custom config script detected for $PACKAGE_NAME"
 		fi
@@ -108,27 +108,27 @@ install_package() {
 		echo -e "No custom install script detected for $PACKAGE_NAME"$END
 		if [[ -f $LT_BASE_TOOLS_LOCATION/$PACKAGE_NAME/install.sh ]]; then
 			echo "Install default LazyTools package.."
-			execute_script install $LT_BASE_TOOLS_LOCATION 
-		fi	
-		
+			execute_script install $LT_BASE_TOOLS_LOCATION
+		fi
+
 		echo -e $BOLD"\n>>> Verify if a custom config script exists..."$END
 		if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/config.sh ]]; then
 			echo -e $GREEN"Custom config script detected"$END
-			execute_script config $LT_USER_HOME_LOCATION 
+			execute_script config $LT_USER_HOME_LOCATION
 		else
 			echo "No custom config script detected for $PACKAGE_NAME"
 		fi
-	fi	
+	fi
 
 	echo -e $GREEN"Installation of $PACKAGE_NAME done"$END
 }
 
-verify_distrib() { 
+verify_distrib() {
 	## Set user distrib
 	echo -e $BOLD"> Verify OS Distribution..."$END
 	if [ -f /etc/lsb-release ]; then
 		echo -e $GREEN"Debian detected\n"$END
-		PACKAGE_MANAGER="apt"	
+		PACKAGE_MANAGER="apt"
 	else
 		echo -e $RED"Can't resolve OS distribution\n"$END
 		exit 1
@@ -137,33 +137,33 @@ verify_distrib() {
 
 create_package() {
 	echo -e "[OK] Create LazyTools package location in $LT_USER_HOME_LOCATION"
-	mkdir $LT_USER_HOME_LOCATION/$1		
+	mkdir $LT_USER_HOME_LOCATION/$1
 	echo -e "[OK] Copy default install template script in $LT_USER_HOME_LOCATION/$1"
 	cp $LT_BASE_TEMPLATE_LOCATION/install_template.sh $LT_USER_HOME_LOCATION/$1/install.sh
 }
 
-## All options configuration 
-case $1 in 
+## All options configuration
+case $1 in
 	-l|--list)
 		echo -e $BOLD"> Packages available:\n"$END
 
 		echo -e "${PACKAGE_LIST[@]}" | sed 's/^/  /g'
-	
+
 		echo -e $BOLD"\n> Installation:"$END
 		echo -e "\n  lt [-i|--install] package_name\n"
-		exit 0 
+		exit 0
 		;;
 
 	# Print help when user don't provide argument
 	""|-h|--help)
 		echo -e "$DISPLAY_HELP"
 		exit 0
-		;;	
+		;;
 
 	-v|--version)
 		echo -e $BOLD"> lazyTools v$LT_VERSION"$END
 		exit 0
-		;;	
+		;;
 
 	-c|--create)
 		if [ -z $2 ]; then
@@ -178,7 +178,7 @@ case $1 in
 			else
 				echo -e $GREEN"LazyTools package name $2 not exists\n"$END
 				echo -e $BOLD"> Create LaztTools package named $2 in $LT_USER_HOME_LOCATION ..."$END
-				create_package $2	
+				create_package $2
 				echo -e $GREEN"LazyTools package named $2 sucessfully created in $LT_USER_HOME_LOCATION/$2 \n"$END
 				exit 0
 			fi
@@ -203,7 +203,7 @@ case $1 in
 		fi
 		;;
 
-		
+
 	-e|--exec)
 		if [ -z $2 ]; then
 			echo -e $RED"Please provide a package to config !"$END
@@ -211,13 +211,13 @@ case $1 in
 			exit 1
 		else
 			echo -e $BOLD"> Verify if package exists..."$END
-			#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+			#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash)
 			if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
 				echo -e $GREEN"Package $2 available"$END
-		
+
 				echo -e $BOLD"\n> Verify if custom script exists..."$END
 				if [[ -f $LT_USER_HOME_LOCATION/$2/config.sh ]]; then
-					echo "A custom config script detected for $2" 
+					echo "A custom config script detected for $2"
 					PACKAGE_NAME=$2
 					execute_script config $LT_USER_HOME_LOCATION
 					exit 0
@@ -263,13 +263,13 @@ case $1 in
 						start_string_len=$(($sub_string_len/2))
 						end_string_len=$(($sub_string_len/2 - 1))
 					fi
-						
+
 					start_string=$(printf "%-${start_string_len}s" "-")
 					end_string=$(printf "%-${end_string_len}s" "-")
 					echo -e "\n${start_string// /-} $package ${end_string// /-}"
 
 					echo -e $BOLD"> Verify if package exists..."$END
-					#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+					#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash)
 					if [[ $PACKAGE_LIST =~ (^|[[:space:]])"${!i}"($|[[:space:]]) ]]; then
 						echo -e $GREEN"Package ${!i} available"$END
 						verify_package "${!i}"
@@ -277,14 +277,14 @@ case $1 in
 						echo -e $YELLOW"Package ${!i} doesn't not exists, please provide a valid package"$END
 						echo -e "Too see the list of available package please run: lt -l\n"
 						exit 1
-					fi	
+					fi
 
 					footer_string=$( printf "%-50s" "-" )
 					echo -e "${footer_string// /-}\n"
 				done
 			else
 				echo -e $BOLD"> Verify if package exists..."$END
-				#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash) 
+				#[[:space:]] is a bash convention (in fact item in list are separated by space not coma in bash)
 				if [[ $PACKAGE_LIST =~ (^|[[:space:]])$2($|[[:space:]]) ]]; then
 					echo -e $GREEN"Package $2 available"$END
 					verify_package $2
@@ -295,9 +295,9 @@ case $1 in
 					exit 1
 				fi
 			fi
-		fi	
+		fi
 		exit 0
-		;;	
+		;;
 
 	*)
 		echo -e $RED"$1 is not a valid option"$END
