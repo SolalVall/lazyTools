@@ -135,6 +135,13 @@ verify_distrib() {
 	fi
 }
 
+verify_root() {
+        if [[ $EUID -ne 0 ]]; then
+           echo -e $RED"Please run the following option '$1' as root"$END
+           exit 1
+        fi
+}
+
 create_package() {
 	echo -e "[OK] Create LazyTools package location in $LT_USER_HOME_LOCATION"
 	mkdir $LT_USER_HOME_LOCATION/$1
@@ -186,6 +193,8 @@ case $1 in
 		;;
 
 	-u|--update)
+                #Ensure command is executed as root
+                verify_root $1
 		LATEST_LT_VERSION=$(curl -sL "https://github.com/SolalVall/lazyTools/releases/latest" | grep -Po 'tree/v([0-9]|\.)+' | head -n1 | sed 's/^.*v//g')
 		echo -e $BOLD"> Check if a new version of lazy tools is available"$END
 		if [[ "$LT_VERSION" != "$LATEST_LT_VERSION" ]]; then
@@ -205,6 +214,8 @@ case $1 in
 
 
 	-e|--exec)
+                #Ensure command is executed as root
+                verify_root $1
 		if [ -z $2 ]; then
 			echo -e $RED"Please provide a package to config !"$END
 			echo -e "Run config for a package | lt -i my_package"
@@ -233,6 +244,8 @@ case $1 in
 		;;
 
 	-i|--install)
+                #Ensure command is executed as root
+                verify_root $1
 		if [ -z $2 ]; then
 			echo -e $RED"Please provide a package to install !"$END
 			echo -e "Install a package          | lt -i my_package"
