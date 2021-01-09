@@ -2,7 +2,7 @@
 
 ## Description
 
-This project as for goal to easily setup/configure/maintains packages on some linux distributions (Debian/RedHat)... 
+This project as for goal to easily setup/configure/maintains packages on some linux distributions (Debian/RedHat)...
 
 You could choose to install the default packages provided by lazyTools and custom them or you could also dynamically create and custom your own package. Basically we could say lazyTools acts like your own and custom cli package manager !
 
@@ -57,37 +57,21 @@ sudo ./setup.sh
 In order to test lazyTools locally run the following commands:
 
 ```bash
+# Run default tests
 cd pipeline && ./pipeline.sh
+```
+
+You can also specify via CLI args some packages to test:
+
+```bash
+# Test 'foo' & 'bar' packages installation
+./pipeline.sh foo bar
 ```
 
 To write some custom tests please update the ```test_lt``` function in ```pipeline/pipeline.sh``` script.
 
 ## Releases infos
-  
+
 Please find below the historic of the different lazyTools releases:
- 
-v0.0.1:
-  - Func for assigning the correct package manager.
-  - Default Functions for verifying a package and install it.
-  - Install tools via a dedicated script (default install.sh)
-  - Works with Debian for now.
-  - Readme.
-  - Options added: --version, --help, --list
-  - Tools added: git, vagrant, virtualbox
 
-v0.0.2:
-  - Create a small installer
-  - Main script able to retrieve package from default and user custom
-  - Move packages to tools/ folder
-
-v0.1:
-  - Add possibility for user to create their own package in ~/lazytools.d (```lt -c my_package```)
-  - Add ability to list packages from user home and default lazyTools location
-  - User can now add a config.sh to a package (via their own ~/lazytools.d folder). Acts like a custom configuration for their package
-
-v0.1.1
-  - Enable possibility to install multiple packages at the same time
-  - Modify command output
-
-v0.2:
-  - Create a local Pipeline in order to test lazyTools installations and some commands via Vagrant (available into the pipeline folder)
+https://github.com/SolalVall/lazyTools/releases

@@ -20,7 +20,7 @@ test_lt() {
 	#vagrant ssh -c "sudo lt -i $1"
 }
 
-is_vagrant_installed=$(which vagrant)
+is_virtualbox_installed=$(which virtualbox)
 if [[ $? -ne 0 ]]; then
 	echo -e "Virtualbox not install.. Please install it \n Run: [apt/yum] install virtualbox -y"
 	exit 1
@@ -33,11 +33,11 @@ if [[ $? -ne 0 ]]; then
 else
 	if [[ -f "$PWD/Vagrantfile" ]]; then
 		echo -e "\n\033[1m================ BUILD ENVIRONEMENT ================\033[0m\n"
-		vagrant up 
+		vagrant up
 		if [[ $? -ne 0 ]]; then
 			echo -e "\033[31m \n>>>>>>>> ENVIRONMENT BUILD FAILED\033[0m"
-			exit 1 
-		else	
+			exit 1
+		else
 			echo -e "\033[32m \n>>>>>>>> ENVIRONMENT BUILD SUCCESS\033[0m\n"
 			echo -e "\033[1m================ TEST ENVIRONEMENT ================\033[0m\n"
 			test_lt $@
@@ -48,7 +48,7 @@ else
 			exit 0
 		fi
 	else
-		echo "Please create a Vagrantfile"
+		echo "No Vagrantfile detected"
 		exit 1
 	fi
 fi
