@@ -6,12 +6,12 @@ $PACKAGE_MANAGER update > /dev/null
 ###
 # i3 install all required packages
 ###
-$PACKAGE_MANAGER install libxcb-shape0-dev libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf xutils-dev libtool automake git -y
+$PACKAGE_MANAGER install libxcb-shape0-dev libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-shape0-dev autoconf xutils-dev libtool automake git -y
 
 ###
 # Specific install for libxcb-xrm-dev (fixed for ubuntu 16)
 ###
-# Fetch project 
+# Fetch project
 git clone https://github.com/Airblader/xcb-util-xrm && cd xcb-util-xrm
 git submodule update --init
 
@@ -28,7 +28,7 @@ rm -rf $PWD/xcb-util-xrm
 # Install i3-gaps from github
 ###
 # Fetch i3-gaps project
-git clone https://www.github.com/Airblader/i3 && cd i3 
+git clone https://www.github.com/resloved/i3 && cd i3
 git checkout gaps && git pull
 
 # Build
@@ -48,7 +48,7 @@ rm -rf $PWD/i3
 ###
 # i3 necessaries tools
 ###
-$PACKAGE_MANAGER install dmenu i3status -y 
+$PACKAGE_MANAGER install dmenu i3status -y
 
 ###
 # INFO MESSAGE

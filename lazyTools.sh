@@ -85,13 +85,13 @@ execute_script() {
 		$SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh $PACKAGE_MANAGER $PACKAGE_NAME
 	else
 		echo "Start installation of $SCRIPT_LOCATION/$PACKAGE_NAME/config.sh"
-		sudo -i -u $SUDO_USER $SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
+		sudo -u $SUDO_USER -H $SCRIPT_LOCATION/$PACKAGE_NAME/$SCRIPT_TYPE.sh
 	fi
 }
 
 install_package() {
 	# First during an installation we always start by executing the install script
-	# from the custom lazytools home folder if the script exsists then if not from the main bin folder
+	# from the custom lazytools home folder when install script exsists. If not, executre the one from the main bin folder
 	echo -e $BOLD"\n>>> Verify if it's your own custom package..."$END
 	if [[ -f $LT_USER_HOME_LOCATION/$PACKAGE_NAME/install.sh ]]; then
 		echo -e $GREEN"Homemade LazyTools package detected"$END
